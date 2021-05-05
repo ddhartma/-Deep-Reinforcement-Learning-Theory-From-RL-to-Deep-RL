@@ -1,11 +1,13 @@
-[image1]: assets/gridworld.png "image1"
-
+[image1]: assets/intro_deep_rl.png "image1"
+[image2]: assets/replay_buffer.png "image2"
 
 # Deep Reinforcement Learning Theory - Deep Q-Networks
 
 ## Content
 - [Introduction](#intro)
-
+- [From RL to Deep RL](#from_rl_to_deep_rl)
+- [Deep Q-Networks](#deep_q_networks)
+- [Experience Replay](#experience_replay)
 - [Setup Instructions](#Setup_Instructions)
 - [Acknowledgments](#Acknowledgments)
 - [Further Links](#Further_Links)
@@ -14,6 +16,93 @@
 - Reinforcement learning is **learning** what to do — **how to map situations to actions** — so as **to maximize a numerical reward** signal. The learner is not told which actions to take, but instead must discover which actions yield the most reward by trying them. (Sutton and Barto, [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book.html))
 - Deep reinforcement learning refers to approaches where the knowledge is represented with a deep neural network
 
+
+## From RL to Deep RL <a name="from_rl_to_deep_rl"></a>
+What is Deep RL? 
+- In some sense, it is using **nonlinear function approximators** to calculate the value actions based directly on observation from the environment.
+- This is represented as a **Deep Neural Network**.
+- **Deep Learning** to find the **optimal parameters** for these function approximators.
+- Supervised Deep Learning concepts use label training data for supervised learning. --> pixels-to-labels
+- When an oral agent handles the entire end-to-end pipeline, it's called pixels-to-actions, referring to the networks ability to take raw sensor data and choose the action,
+it thinks will best maximize its reward.
+
+    ![image1]
+
+- Some literature:
+    - [Neural Fitted Q Iteration - First Experienceswith a Data Efficient Neural ReinforcementLearning Method](http://ml.informatik.uni-freiburg.de/former/_media/publications/rieecml05.pdf)
+    - [Human-level control through deep reinforcement learning](Human-level control through deep reinforcement learning)
+
+
+## Deep Q-Networks <a name="deep_q_networks"></a> 
+### Neural Networks
+- In 2015, Deep Mind made a breakthrough by
+designing an agent that learned to play video games better than humans.
+- They call this agent a Deep Q Network.
+- At the heart of the agent is **a deep neural network that acts as a function approximator**.
+- You **pass in images from the video game** one screen at a time,
+and it produces **a vector of action values**, with the **max value indicating the action to take**.
+- As a reinforcement signal, it is fed back the change in game score at each time step.
+- In the beginning when the neural network is **initialized with random values**, the actions taken are all over the place.
+- Overtime it begins to **associate situations and sequences** in
+the game with appropriate actions and learns to actually play the game well.
+
+### Complexity
+- Atari games are displayed at a resolution of 210 by 160 pixels, with 128 possible colors for each pixel.
+- This is still technically **a discrete state space but very large**.
+- To **reduce complexity**,
+    - convert the frames to **gray scale**,
+    - scale them down to **a square 84 by 84** pixel block.
+    - use GPU
+
+### Memory
+- Give the agent **access to a sequence of frames**, they **stacked four such frames together** resulting in
+a final state space size of **84 by 84 by 4**.
+
+### All at once
+- Unlike a traditional reinforcement learning setup where only one Q value is produced at a time, the Deep Q network is designed to produce a **Q value for every possible action in a single forward pass**.
+- Without this, one would have to run the network individually for every action.
+- Use this vector to take an action, either stochastically, or by choosing the one with the maximum value. 
+
+### Convolutional approach:
+- The screen images are first processed by **convolutional layers**.
+- This allows the system to exploit spatial relationships.
+since four frames are stacked and provided as input,
+these convolutional layers also extract some temporal properties across those frames.
+- The original DQN agent used **three convolutional layers** with **ReLU** activation (regularized linear units).
+- Then followed by **one fully-connected hidden layer with ReLU activation**,
+- Then **one fully-connected linear output layer** that produced the vector of action values.
+
+- This same architecture was used for all the Atari games they tested on, but each game was learned from scratch with a freshly initialized network.
+
+### Modifications due to unstable and ineffective policy
+- Training such a network requires a lot of data,
+but even then, it is not guaranteed to converge on the optimal value function.
+- In fact, there are situations where the network weights can oscillate or diverge, due to the high correlation between actions and states.
+- This can result in a very unstable and ineffective policy.
+
+- Two succesful modifications: 
+    - Experience replay
+    - Fixed Q targets
+
+
+## Experience Replay <a name="experience_replay"></a> 
+- In basic Q-learning algorithm the agent 
+    - interacts with the environment and at each time step and obtains a state action reward
+    - learns from it
+    - moves on to the next tuple in the following timestep.
+- This seems a little wasteful.
+- Agent could learn more from these experienced tuples if we stored them somewhere.
+- Moreover, some states are pretty rare to come by and some actions can be pretty costly, so it would be nice to recall such experiences.
+
+### Replay buffer (store and sample)
+- **Store** each experienced tuple in this buffer 
+- Then **sample** a small batch of tuples from it in order to learn.
+- Agent is able to learn from individual tuples multiple times,
+recall rare occurrences, and in general makes better use of fire experience.
+- Consider: a sequence of experienced tuples can be highly correlated
+- By keeping track of a **replay buffer** and using **experience replay** to **sample from the buffer at random**, we can prevent action values from oscillating or diverging catastrophically.
+
+    ![image2]
 
 
 
