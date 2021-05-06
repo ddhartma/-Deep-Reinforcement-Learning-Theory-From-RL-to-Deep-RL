@@ -2,6 +2,11 @@
 [image2]: assets/replay_buffer.png "image2"
 [image3]: assets/fixed_targets.png "image3"
 [image4]: assets/fixed_targets_eq.png "image4"
+[image5]: assets/optimal_action_value_func.png "image5"
+[image6]: assets/loss_at_iter_i.png "image6"
+[image7]: assets/dqn_conv_net.png "image7"
+[image8]: assets/result_paper.png "image8"
+
 
 # Deep Reinforcement Learning Theory - Deep Q-Networks
 
@@ -11,6 +16,7 @@
 - [Deep Q-Networks](#deep_q_networks)
 - [Experience Replay](#experience_replay)
 - [Fixed Q Targets](#fixed_q_targets)
+- [Reference: Human-level control through deep reinforcement learning](#paper)
 - [Setup Instructions](#Setup_Instructions)
 - [Acknowledgments](#Acknowledgments)
 - [Further Links](#Further_Links)
@@ -122,6 +128,63 @@ That is between consecutive experience tuples.
     ![image4]
 
     where **w<sup>−</sup>** are the weights of a separate target network that are not changed during the learning step, and **(S, A, R, S′)** is an experience tuple.
+
+## Reference: Human-level control through deep reinforcement learning <a name="paper"></a> 
+- Check the following reference: [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
+
+### Idea of this paper:
+- **Idea from biology**: Human decisions are based on reinforcemnt learning (dopaminergetic neuroms and temporal difference RL) and 
+- **Basis**: 
+   - Use deep Q-networks (DQN) 
+    - DQNs learn successful policies from sensor inputs using end-to-end RL
+    - Atari 2600 games are the baseline for this study (49 games)
+    - Use same algorithm, network architecture and hyperparameters for all 49 games
+- **Input**: 
+    - Pixels (210 x 160) colour video at 60 Hz)
+    - Game score
+- **Preprocessing**:
+    - Raw Atari2600 frames 210xx 160 pixel images with a 128-colour palette, can be demanding in terms of computationand memory requirements
+    - We apply a basic preprocessing step aimed at reducing the input dimensionality and dealing with some artefacts of the Atari 2600 emu-lator. First, to encode a single frame we take the maximum value for each pixel colour alue over the frame being encoded and the previous frame. This was necessary toremove flickering that is present in games where some objects appear only in evenframes while other objects appear only in odd frames, an artefact caused by thelimited number of sprites Atari 2600 can display at once. Second, we then extractthe Y channel, also known as luminance, from the RGB frame and rescale it to84384. The functionwfrom algorithm 1 described belowappliesthis preprocess-ing to themmost recent frames and stacks them to produce the input to theQ-function, in whichm5
+- **Architecture**:
+    - DQN by using
+    - Deep neural convolutional networks with stochastic gradient descent
+- **Workflow**:
+    - Agent interacts with environment
+    - Observations
+    - Actions
+    - Rewards
+- **Goal of agent**: select actions which maximize cumulative future rewards
+- **Startegy**: 
+    - Use deep convolutional neural network to approximate the **optimal action value function**
+
+        ![image5]
+        which is the maximum sum of rewards **r<sub>t</sub>** discounted by **γ** at each time-step **t**, achievable by a behaviour policy **π=P((a|s)**, after making an observation **s** and taking an action **a**.
+
+    - Get a **guess** of the action value function **Q(s,a,θ<sub>i</sub>)** using the neural network shown in figure below
+    - **θ<sub>i</sub>** are weights of the Q-network at iteration **i**
+    - Use **Experience Replay** and **Fixed Targets** due to instabilities (triggered by correlations) 
+        - Store agents experience **e<sub>t</sub> = (s<sub>t</sub>,a<sub>t</sub>, r<sub>t</sub>,s<sub>t+1</sub>)** at time step **t**
+        - Store it in data set **D<sub>t</sub> = {e<sub>1</sub>, ..., e<sub>t</sub>}** 
+        - Apply **Q-Learning updates** on samples of experience drawn from **D<sub>t</sub> uniformly at **random**
+        - **Loss function** at iteration **i**:
+        ![image6]
+
+            **γ**: discount factor determining the agent’s horizon
+
+            **θ<sub>i</sub>**: weights of the Q-network at iteration **i** 
+
+            **θ<sub>i</sub><sup>-</sup>**: the network parameters **used to** compute the target at iteration **i**. 
+        - The target net-work parameters **θ<sub>i</sub><sup>-</sup>** are only updated with the Q-network parameters **θ<sub>i</sub>** every **C** steps and are **held fixed between individual updates**.
+
+    ![image7]
+
+- **Result** of DQN based on conv layer with stochastic gradient descent:
+    - stable result
+    - Figure below show **temporal evolution** of 
+        - **average score per episode** and 
+        - **average predicted Q-values**
+
+    ![image8]
 
 ## Setup Instructions <a name="Setup_Instructions"></a>
 The following is a brief set of instructions on setting up a cloned repository.
