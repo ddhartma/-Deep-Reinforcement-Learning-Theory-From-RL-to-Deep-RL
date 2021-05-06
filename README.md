@@ -6,7 +6,13 @@
 [image6]: assets/loss_at_iter_i.png "image6"
 [image7]: assets/dqn_conv_net.png "image7"
 [image8]: assets/result_paper.png "image8"
-
+[image9]: assets/deep_q_network.png "image9"
+[image10]: assets/future_disc_return.png "image10"
+[image11]: assets/future_disc_return_bell.png "image11"
+[image12]: assets/future_disc_return_bell_2.png "image12"
+[image13]: assets/loss_func.png "image13"
+[image14]: assets/gradient.png "image14"
+[image15]: assets/algo_1.png "image15"
 
 # Deep Reinforcement Learning Theory - Deep Q-Networks
 
@@ -17,6 +23,7 @@
 - [Experience Replay](#experience_replay)
 - [Fixed Q Targets](#fixed_q_targets)
 - [Reference: Human-level control through deep reinforcement learning](#paper)
+- [The DQN Algorithm](#algo_1)
 - [Setup Instructions](#Setup_Instructions)
 - [Acknowledgments](#Acknowledgments)
 - [Further Links](#Further_Links)
@@ -83,6 +90,8 @@ these convolutional layers also extract some temporal properties across those fr
 
 - This same architecture was used for all the Atari games they tested on, but each game was learned from scratch with a freshly initialized network.
 
+    ![image9]
+
 ### Modifications due to unstable and ineffective policy
 - Training such a network requires a lot of data,
 but even then, it is not guaranteed to converge on the optimal value function.
@@ -139,25 +148,17 @@ That is between consecutive experience tuples.
     - DQNs learn successful policies from sensor inputs using end-to-end RL
     - Atari 2600 games are the baseline for this study (49 games)
     - Use same algorithm, network architecture and hyperparameters for all 49 games
-- **Input**: 
-    - Pixels (210 x 160) colour video at 60 Hz)
-    - Game score
-- **Preprocessing**:
-    - Raw Atari2600 frames 210xx 160 pixel images with a 128-colour palette, can be demanding in terms of computationand memory requirements
-    - We apply a basic preprocessing step aimed at reducing the input dimensionality and dealing with some artefacts of the Atari 2600 emu-lator. First, to encode a single frame we take the maximum value for each pixel colour alue over the frame being encoded and the previous frame. This was necessary toremove flickering that is present in games where some objects appear only in evenframes while other objects appear only in odd frames, an artefact caused by thelimited number of sprites Atari 2600 can display at once. Second, we then extractthe Y channel, also known as luminance, from the RGB frame and rescale it to84384. The functionwfrom algorithm 1 described belowappliesthis preprocess-ing to themmost recent frames and stacks them to produce the input to theQ-function, in whichm5
-- **Architecture**:
-    - DQN by using
-    - Deep neural convolutional networks with stochastic gradient descent
-- **Workflow**:
-    - Agent interacts with environment
-    - Observations
-    - Actions
-    - Rewards
-- **Goal of agent**: select actions which maximize cumulative future rewards
-- **Startegy**: 
+    - Prior knowledge relies only in:
+        - visual images (conv network)
+        - game specific score
+        - number of actions 
+        - life count
+
+- **Strategy**: 
     - Use deep convolutional neural network to approximate the **optimal action value function**
 
         ![image5]
+
         which is the maximum sum of rewards **r<sub>t</sub>** discounted by **γ** at each time-step **t**, achievable by a behaviour policy **π=P((a|s)**, after making an observation **s** and taking an action **a**.
 
     - Get a **guess** of the action value function **Q(s,a,θ<sub>i</sub>)** using the neural network shown in figure below
@@ -165,16 +166,17 @@ That is between consecutive experience tuples.
     - Use **Experience Replay** and **Fixed Targets** due to instabilities (triggered by correlations) 
         - Store agents experience **e<sub>t</sub> = (s<sub>t</sub>,a<sub>t</sub>, r<sub>t</sub>,s<sub>t+1</sub>)** at time step **t**
         - Store it in data set **D<sub>t</sub> = {e<sub>1</sub>, ..., e<sub>t</sub>}** 
-        - Apply **Q-Learning updates** on samples of experience drawn from **D<sub>t</sub> uniformly at **random**
+        - Apply **Q-Learning updates** on samples of experience drawn from **D<sub>t</sub>** uniformly at **random**
         - **Loss function** at iteration **i**:
-        ![image6]
+
+            ![image6]
 
             **γ**: discount factor determining the agent’s horizon
 
             **θ<sub>i</sub>**: weights of the Q-network at iteration **i** 
 
             **θ<sub>i</sub><sup>-</sup>**: the network parameters **used to** compute the target at iteration **i**. 
-        - The target net-work parameters **θ<sub>i</sub><sup>-</sup>** are only updated with the Q-network parameters **θ<sub>i</sub>** every **C** steps and are **held fixed between individual updates**.
+        - The target network parameters **θ<sub>i</sub><sup>-</sup>** are only updated with the Q-network parameters **θ<sub>i</sub>** every **C** steps and are **held fixed between individual updates**.
 
     ![image7]
 
@@ -185,6 +187,128 @@ That is between consecutive experience tuples.
         - **average predicted Q-values**
 
     ![image8]
+- **Preprocessing**:
+    - Raw Atari2600 frames 210xx 160 pixel images with a 128-colour palette, can be demanding in terms of computationand memory requirements. 
+        - Reduce the input dimensionality
+        - Reduce artefacts of the Atari 2600 emulator.
+    - First: Take maximum value for each pixel colour over the actual and the previous frame to remove flickering of objects (which appear only in even frames while other objects appear only in odd frames)
+    - Second: Extract the Y channel, also known as luminance, from the RGB frame and rescale it to **84 x 84** (greyscale). 
+    - Take the **m=4** most recent frames and stacks them to produce the input to the Q-function
+    - Function **Φ** applies the preprocessing to the 4 most recent frames
+- Code availability: [download](https://sites.google.com/a/deepmind.com/dqn/)
+- **Input**: 
+    - Pixels (210 x 160) colour video at 60 Hz)
+    - Game score
+- **Model architecture**:
+    - DQN by using
+    - Deep neural convolutional networks with stochastic gradient descent
+    - Compute Q-values for all possible actions in a given state with only a single forwatd pass through the network
+        - Use a **separate output unit** for each possible **action**
+        - Only **state representation is an input** to the neural network
+    - **Input**: 84x84x4 images produced by the preprocessing map **Φ**
+    - **1st hidden layer**: conv layer, 32 filter, 8x8 kernel, stride 4, ReLU
+    - **2nd hidden layer**: conv layer, 64 filter, 4x4 kernel, stride 2, ReLU,
+    - **3rd hidden layer**: conv layer, 64 filter, 4x4 kernel, stride 1, ReLU
+    - **4th hidden layer**: fully connected, 512 rectifier units
+    - **Output layer**: linear layer with a single output for each action
+    - Number of outputs vary between 4 and 18 depending on the game
+- **Training details**:
+    - Use same network architecture, learning rate and hyperparameters for all 49 games
+    - Scale (clip) scores (as they vary from game to game). This limits scale of error derivatives (therefore same learning rate can be used)
+        - Positive reward to 1
+        - Negative reward to -1 
+        - No reward = 0
+    - Optimizer: RMSprop with minibatch size 32
+    - **ε-greedy** policy, scaled linear from 1.0 to 0.1 over the first million frames, fixed at 0.1 thereafter
+    - Number of frames played: 50 million (38 days)
+    - Number of frames for replay buffer (1 million most recent frames)
+    - Frame skipping technique: Agent sees and selects actions on every **k**th frame instead of every frame (here: **k=4**). Last action is repeated on skipped frames. --> Reduces computation, reduces runtime, without lack of learning 
+    - No systematic grid search for hyperparameter choice (all fixed for all games)
+
+- **Evaluation procedure**:
+    - Trained agents were evaluated by playing each game **30 times** for up to **5min** each with different initial random conditions and an **ε-greedy** policy with**ε=0.05**
+    - Used to minimize overfitting effects during evaluation.
+    - This random agent is used as a baseline comparison (with random action at 10 Hz, every 6th frame)
+- **Goal of agent**: select actions which maximize cumulative future rewards
+
+- **Algorithm**
+    - Agent interacts with environment (Atari emulator) in a sequence of 
+        - actions
+        - observations
+        - rewards
+    - At each time-step the agent selects an action **a<sub>t</sub>** from the set of legal game actions **A={1, ..., K}**. 
+    - Action is passed to the emulator. Emulator answers with an image **x<sub>t</sub>** from the emulator, which is a vector of pixel values representing the current screen and a reward **r<sub>t</sub>** from game score
+    - Agent only observes the current screen.
+    - Game score may depend on the whole previous sequence of actions and observations
+    - Therefore, sequences of actions and observations,**s<sub>t</sub>~x<sub>1</sub>,a<sub>1</sub>,x<sub>2</sub>,...,a<sub>t-1</sub>, x<sub>t</sub>**, are input to the algorithm
+    - Algorithm then learns game strategies depending upon these sequences. 
+    - All sequences in the emulator are assumed to terminate in a finite number of time-steps.
+    - **Goal of agent**: select actions which maximize cumulative future rewards
+    - Future rewards are discounted by a factor of **γ** per time-step (**γ**=0.99)
+    - **Future discounted return** at time **t** as 
+
+        ![image10]
+    
+        **T**: time-step at which the game terminates. 
+    - Optimal action-value function **Q<sup>*</sup>(s,a)** as the maximum expected return achievable by following any policy, after seeing some sequences and then taking some action **a**,
+
+        ![image5]
+    
+    - The optimal action-value function obeys an important identity known as the Bellman equation. This is based on the following intuition: if the optimal value **Q<sup>*</sup>(s',a')** of the sequences **s'** at the next time-step was known for all possible actions **a'**, then the optimal strategy is to select the action **a'** maximizing the expected value of **r + γ Q<sup>*</sup>(s',a')**:
+
+        ![image11]
+
+    - Estimate the action-value function by using the Bellman equation as an iterative update
+
+        ![image12]
+
+    - In Theory: Such value iteration algorithms converge to the optimal action-value function **Q<sub>i</sub> -> Q<sup>*</sup>** for **i -> ∞**
+    - In Practice: Use function approximation to estimate the action-value function **Q(s,a,θ) ≈ Q<sup>*</sup>(s,a)**
+
+    - Use a nonlinear function approximator such as a neural network
+    - A neural network function approximator with weights **θ** is a Q-network
+    - A Q-network can be trained by adjusting the parameter **θ<sub>i</sub>** at iteration **i** to reduce the mean-squared error in the Bellman equation, where the optimal target values 
+    **r + γ max<sub>a'</sub>Q<sup>*</sup>(s',a')** are substituted by approximate target values **r + γ max<sub>a'</sub>Q(s',a', θ<sub>i</sub><sup>-</sup>)**
+    using parameters **θ<sub>i</sub><sup>-</sup>** from some previous iteration (**Fixed Targets**).
+    
+    - Use **Experience Replay** and **Fixed Targets** due to instabilities (triggered by correlations) 
+        - Store agents experience **e<sub>t</sub> = (s<sub>t</sub>,a<sub>t</sub>, r<sub>t</sub>,s<sub>t+1</sub>)** at time step **t**
+        - Store it in data set **D<sub>t</sub> = {e<sub>1</sub>, ..., e<sub>t</sub>}** 
+        - Apply **Q-Learning updates** on samples of experience drawn from **D<sub>t</sub>** uniformly at **random**
+        - **Loss function** at iteration **i**:
+
+            ![image13]
+
+            Note that the targets depend on the network weights; this is in contrast with the targets used for supervised learning, which are fixed before learning begins. At each stage of optimization, we hold the parameters from the previous iteration **θ<sub>i</sub><sup>-</sup>**  fixed when optimizing the **i**th loss function **L<sub>i</sub>(θ<sub>i</sub>), resulting in a sequence of well-defined optimization problems. The final term is the variance of the targets, which does not depend on the parameters θ<sub>i</sub> we are currently optimizing,and may therefore be ignored
+
+    - Differentiating the loss function with respect to the weights results in the following gradient:
+
+        ![image14]
+
+    - Optimize the loss function by stochastic gradient descent. The familiar Q-learning algorithm can be recovered in this framework by updating the weights after every time step, replacing the expectations using single samples, and setting **θ<sub>i</sub><sup>-</sup> = θ<sub>i-1</sub>**.
+
+- **Training algorithm for deep Q-networks**
+    - The agent selects and executes actions according to an **ε-greedy** policy based on **Q**. Because using histories of arbitrary length as inputs to a neural network can be difficult, our Q-function instead works on a fixed length representation of histories produced by the function **Φ** described above. 
+    - The algorithm modifies standard online Q-learning in two ways to make itsuitable for training large neural networks without diverging
+    - First, we use a technique known as **experience replay** in which we store the agents experience **e<sub>t</sub> = (s<sub>t</sub>,a<sub>t</sub>, r<sub>t</sub>,s<sub>t+1</sub>)** at time step **t** in a data set **D<sub>t</sub> = {e<sub>1</sub>, ..., e<sub>t</sub>}** pooled over many episodes (where the end of an episode occurs when a terminal state is reached) into a replay memory
+    - During the inner loop of the algorithm, we apply Q-learning updates, or minibatch updates, to samples of experience (s,a,r,s') drawn at random from the pool of stored samples. 
+    - This approach has several advantages over standard online Q-learning. 
+        - First, each step of experience is potentially used in many weight updates, which allows for greater data efficiency. - Second, randomizing the samples breaks these correlations and therefore reduces the variance of the updates. 
+        - Third, when learning on-policy the current parameters determine the next data sample that the parameters are trained on. 
+    - By using experience replay the ehaviour distribution is averaged over many of its previous states, smoothing out learning and avoiding oscillations or divergence in the parameters. 
+    - The algorithm only stores the last **N** experience tuples in the replay memory, and samples uniformly at random from **D** when performing updates.
+    - Use a **separate network for generating the targets** **y<sub>j</sub>** in the Q-learning update. More precisely, every **C** updates we clone the network **Q** to obtain a target network  **^Q** and use **^Q** for generating the Q-learning targets **y<sub>j</sub>** for the following **C** updates to **Q**. 
+    - This modification makes the algorithm more stable compared to standard online Q-learning, where an update that increases **Q(s<sub>t</sub>,a<sub>t</sub>)** often also increases **Q(s<sub>t+1</sub>,a)** for all **a** and hence also increases the target **y<sub>j</sub>**, possibly leading to oscillations or divergence of the policy. Generating the targets using an older set of parameters adds a delay between the time an update to **Q** is made and the time the update affects the targetsyj,making divergence oroscillations much more unlikely.
+    - **Clip** the error term from the update
+     
+        **r + γ max<sub>a'</sub>Q(s',a', &theta;<sub>i</sub><sup>-</sup>) - Q(s,a, &theta;<sub>i</sub>)**
+    
+        to be between -1 and 1. This form oferror clipping further improved the stability of the algorithm
+
+## The DQN Algorithm <a name="algo_1"></a>
+![image15]
+
+
 
 ## Setup Instructions <a name="Setup_Instructions"></a>
 The following is a brief set of instructions on setting up a cloned repository.
