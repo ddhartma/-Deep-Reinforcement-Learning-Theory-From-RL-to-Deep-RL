@@ -1,5 +1,7 @@
 [image1]: assets/intro_deep_rl.png "image1"
 [image2]: assets/replay_buffer.png "image2"
+[image3]: assets/fixed_targets.png "image3"
+[image4]: assets/fixed_targets_eq.png "image4"
 
 # Deep Reinforcement Learning Theory - Deep Q-Networks
 
@@ -8,6 +10,7 @@
 - [From RL to Deep RL](#from_rl_to_deep_rl)
 - [Deep Q-Networks](#deep_q_networks)
 - [Experience Replay](#experience_replay)
+- [Fixed Q Targets](#fixed_q_targets)
 - [Setup Instructions](#Setup_Instructions)
 - [Acknowledgments](#Acknowledgments)
 - [Further Links](#Further_Links)
@@ -30,7 +33,7 @@ it thinks will best maximize its reward.
 
 - Some literature:
     - [Neural Fitted Q Iteration - First Experienceswith a Data Efficient Neural ReinforcementLearning Method](http://ml.informatik.uni-freiburg.de/former/_media/publications/rieecml05.pdf)
-    - [Human-level control through deep reinforcement learning](Human-level control through deep reinforcement learning)
+    - [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
 
 
 ## Deep Q-Networks <a name="deep_q_networks"></a> 
@@ -104,10 +107,21 @@ recall rare occurrences, and in general makes better use of fire experience.
 
     ![image2]
 
+## Fixed Q Targets <a name="fixed_q_targets"></a>
+- Experience replay helps us to address one type of correlation:
+That is between consecutive experience tuples.
+- There is another kind of correlation that Q-learning is susceptible to.
+- Q-learning is a form of **Temporal Difference or TD learning**
+- **Goal** Reduce the difference (TD error) between the **TD target** and the currently **predicted Q-value**.
 
+    ![image3]
 
+- In Q-Learning, we update a **guess** with a **guess**, and this can potentially lead to **harmful correlations**. 
+- To avoid this, we can update the parameters *w** in the network **q<sup>^</sup>** to better approximate the action value corresponding to state **S** and action **A** with the following update rule:
 
+    ![image4]
 
+    where **w<sup>−</sup>** are the weights of a separate target network that are not changed during the learning step, and **(S, A, R, S′)** is an experience tuple.
 
 ## Setup Instructions <a name="Setup_Instructions"></a>
 The following is a brief set of instructions on setting up a cloned repository.
