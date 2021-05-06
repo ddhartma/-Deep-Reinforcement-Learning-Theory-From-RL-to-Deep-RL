@@ -13,6 +13,7 @@
 [image13]: assets/loss_func.png "image13"
 [image14]: assets/gradient.png "image14"
 [image15]: assets/algo_1.png "image15"
+[image16]: assets/algo_video.png "image16"
 
 # Deep Reinforcement Learning Theory - Deep Q-Networks
 
@@ -307,6 +308,8 @@ That is between consecutive experience tuples.
 
 ## The DQN Algorithm <a name="algo_1"></a>
 ![image15]
+
+![image16]
 
 
 
