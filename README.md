@@ -17,7 +17,7 @@
 
 # Deep Reinforcement Learning Theory - Deep Q-Networks
 
-## Content
+## Content 
 - [Introduction](#intro)
 - [From RL to Deep RL](#from_rl_to_deep_rl)
 - [Deep Q-Networks](#deep_q_networks)
