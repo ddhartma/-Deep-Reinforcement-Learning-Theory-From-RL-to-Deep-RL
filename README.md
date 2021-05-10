@@ -14,6 +14,8 @@
 [image14]: assets/gradient.png "image14"
 [image15]: assets/algo_1.png "image15"
 [image16]: assets/algo_video.png "image16"
+[image17]: assets/overest_of_q_values.png "image17"
+[image18]: assets/double_dqn.png "image18"
 
 # Deep Reinforcement Learning Theory - Deep Q-Networks
 
@@ -25,6 +27,13 @@
 - [Fixed Q Targets](#fixed_q_targets)
 - [Reference: Human-level control through deep reinforcement learning](#paper)
 - [The DQN Algorithm](#algo_1)
+- [Example LunarLander-v2](#lunar_lander)
+- [Deep Q-Learning Improvements](#impro)
+    - [Double DQN](#double_dqn)
+    - [Prioritized Experience Replay](#prio_exp_rep)
+    - [Dueling DQN](#duel_dqn)
+    - [Rainbow](#rainbow)
+
 - [Setup Instructions](#Setup_Instructions)
 - [Acknowledgments](#Acknowledgments)
 - [Further Links](#Further_Links)
@@ -302,7 +311,7 @@ That is between consecutive experience tuples.
     - This modification makes the algorithm more stable compared to standard online Q-learning, where an update that increases **Q(s<sub>t</sub>,a<sub>t</sub>)** often also increases **Q(s<sub>t+1</sub>,a)** for all **a** and hence also increases the target **y<sub>j</sub>**, possibly leading to oscillations or divergence of the policy. Generating the targets using an older set of parameters adds a delay between the time an update to **Q** is made and the time the update affects the targetsyj,making divergence oroscillations much more unlikely.
     - **Clip** the error term from the update
      
-        **r + γ max<sub>a'</sub>Q(s',a', &theta;<sub>i</sub><sup>-</sup>) - Q(s,a, &theta;<sub>i</sub>)**
+        **r + γ max<sub>a'</sub> Q(s',a', &theta;<sub>i</sub><sup>-</sup>) - Q(s,a, &theta; <sub>i</sub>)**
     
         to be between -1 and 1. This form oferror clipping further improved the stability of the algorithm
 
@@ -312,6 +321,53 @@ That is between consecutive experience tuples.
 ![image16]
 
 
+## Example LunarLander-v2 <a name="lunar_lander"></a>
+
+- [Lunar Lander Example](https://github.com/ddhartma/Deep-Reinforcement-Learning-Project-OpenAI-Gym-LunarLander-v2)
+
+## Deep Q-Learning Improvements <a name="impro"></a>
+- Double DQN
+- Prioritized Experience Replay
+- Dueling DQN
+
+
+## Double DQN <a name="double_dqn"></a>
+- Deep Q-Learning [tends to overestimate](https://www.ri.cmu.edu/pub_files/pub1/thrun_sebastian_1993_1/thrun_sebastian_1993_1.pdf) action values. [Double Q-Learning](https://arxiv.org/abs/1509.06461) has been shown to work well in practice to help with this. Why?
+- **Update rule for Q-learning with function approximation** (see figure below): For the TD target the max operation is necessary to find
+the best possible value from the next state.
+- **The max operation means**: that we want to obtain the Q-value for the state S' and the action that results in the maximum Q-value among all possible actions from that state.
+- We can see that it's possible for the arg max operation to make a mistake, especially in the early stages. Why? Because the Q-values are still evolving, and we may not have gathered enough information to figure out the best action. The accuracy of our Q-values depends a lot on what actions have been tried, and what neighboring states have been explored.
+- In fact, it has been shown that this results in an overestimation of Q-values, since we always pick the maximum among a set of noisy numbers.
+
+    ![image17]
+
+### How to make the estimation more robust? -- Double Q-Learning
+- **Select** the best action using one set of parameters **w**,
+but **evaluate** it using a different set of parameters **w'**.
+- It's basically like having **two separate function approximators** that must agree on the best action.
+- If **w** picks an action that is not the best according to **w'**,
+then the Q-value returned is not that high.
+- In the long run, this prevents the algorithm from propagating
+incidental high rewards that may have been obtained by chance,
+and don't reflect long-term returns.
+
+### How to get the second set of parameters?
+- DQNs with fixed Q targets already have an alternate set of parameters **w<sup>-</sup>**?
+- It turns out that since w-minus is kept frozen for a while,
+it is different enough from w that it can be reused for this purpose.
+- This helps preventing Q values from exploding in early stages of learning or fluctuating later on.
+
+    ![image18]
+
+
+## Prioritized Experience Replay <a name="prio_exp_rep"></a>
+- Deep Q-Learning samples experience transitions uniformly from a replay memory. [Prioritized experienced replay](https://arxiv.org/abs/1511.05952) is based on the idea that the agent can learn more effectively from some transitions than from others, and the more important transitions should be sampled with higher probability.
+
+
+## Dueling DQN <a name="duel_dqn"></a>
+- Currently, in order to determine which states are (or are not) valuable, we have to estimate the corresponding action values for each action. However, by replacing the traditional Deep Q-Network (DQN) architecture with a [dueling architecture](https://arxiv.org/abs/1511.06581), we can assess the value of each state, without having to learn the effect of each action.
+
+## Rainbow <a name="rainbow"></a>
 
 ## Setup Instructions <a name="Setup_Instructions"></a>
 The following is a brief set of instructions on setting up a cloned repository.
