@@ -16,6 +16,10 @@
 [image16]: assets/algo_video.png "image16"
 [image17]: assets/overest_of_q_values.png "image17"
 [image18]: assets/double_dqn.png "image18"
+[image19]: assets/prio_exp_rep_1.png "image19"
+[image20]: assets/prio_exp_rep_2.png "image20"
+[image21]: assets/dueling_networks.png "image21"
+[image22]: assets/rainbow.png "image22"
 
 # Deep Reinforcement Learning Theory - Deep Q-Networks
 
@@ -363,11 +367,79 @@ it is different enough from w that it can be reused for this purpose.
 ## Prioritized Experience Replay <a name="prio_exp_rep"></a>
 - Deep Q-Learning samples experience transitions uniformly from a replay memory. [Prioritized experienced replay](https://arxiv.org/abs/1511.05952) is based on the idea that the agent can learn more effectively from some transitions than from others, and the more important transitions should be sampled with higher probability.
 
+    ![image19]
+
+- Recall the basic idea behind it. We interact with the environment to **collect experience tuples**, **save them in a buffer**, and then later, we **randomly sample a batch** to learn from. This helps us break the correlation between consecutive experiences and stabilizes our learning algorithm.
+- But **some of these experiences may be more important** for learning than others. These important experiences might occur infrequently.
+- If we sample the batches uniformly, then these experiences have a very small chance of getting selected.
+- Since buffers are practically limited in capacity, older important experiences may get lost.
+
+### Prioritized experience replay comes in.
+- **TD error delta** as a criteria to set priorities to each tuple: The bigger the error, the more we expect to learn from that tuple
+- Magnitude of this error as a measure of priority and store it along with each corresponding tuple in the replay buffer.
+- When creating batches, we can use this value to compute a sampling probability.
+- Select any tuple **i** with a probability equal to its priority value **p<sub>i</sub>** normalize by the sum of all priority values in the replay buffer.
+- When a tuple is picked, we can update its priority with a newly computed TD error using the latest q values.
+- This seems to work fairly well and has been shown to
+reduce the number of batch updates needed to learn a value function.
+
+### There are a couple of things we can improve.
+1. TD error = 0
+    - If the TD error = 0, priority and tuple probability of being picked will also be 0.
+    - However: learning from such a tuple still possible, it might be the case that our estimate was closed due to the limited samples we visited till that point.
+    - So add a small constant **e** to every priority value.
+2. Greedily using these priority values
+    - could lead to a small subset of experiences being replayed over and over resulting in a **overfitting** to that subset.
+    - To avoid this, we can reintroduce some element of uniform random sampling.
+    - **Hyperparameter a** to redefine the sampling probability as, priority  to the power **a** divided by the sum of all priorities **p<sub>k</sub>
+    - We can control how much we want to use priorities versus randomness by varying this parameter.
+    - **a=0** corresponds to pure uniform randomness and **a=1** only uses priorities.
+
+### Adjustment to Update rule for Prioritized experience replay     
+- Remember: Q learning update is derived from an expectation over all experiences.
+- The q values will be biased by the priority values
+- To correct for this bias use a sampling weight **1/N** (N= size of replay buffer) times one over the sampling probability **p(i)**.
+- **Hyperparameter b** to control how much these weights affect learning.
+
+    ![image20]
+
 
 ## Dueling DQN <a name="duel_dqn"></a>
 - Currently, in order to determine which states are (or are not) valuable, we have to estimate the corresponding action values for each action. However, by replacing the traditional Deep Q-Network (DQN) architecture with a [dueling architecture](https://arxiv.org/abs/1511.06581), we can assess the value of each state, without having to learn the effect of each action.
 
+
+### Architecture:
+- A sequence of convolutional layers followed by a couple of fully connected layers that produce Q values.
+- The core idea of dueling networks is to use two streams,
+one that estimates the **state value function**
+and one that estimates the **advantage for each action**.
+- These streams may share some layers in the beginning such as convolutional layers, then branch off with their own fully-connected layers.
+- Finally, the desired Q values are obtained by combining the state and advantage values.
+
+### Intuition:
+- The intuition behind this is that the value of most states don't vary a lot across actions.
+- So, it makes sense to try and directly estimate them, but we still need to capture the difference actions make in each state. This is where the advantage function comes in.
+- Some modifications are necessary to adapt Q learning: [dueling networks paper](https://arxiv.org/abs/1511.06581)
+
+    ![image21]
+
+
 ## Rainbow <a name="rainbow"></a>
+- Many more extensions have been proposed, including:
+
+    - Learning from [multi-step bootstrap targets](https://arxiv.org/abs/1602.01783) 
+    - [Distributional DQN](https://arxiv.org/abs/1707.06887)
+    - [Noisy DQN](https://arxiv.org/abs/1706.10295)
+
+- Each of the six extensions address a different issue with the original DQN algorithm.
+
+- Researchers at Google DeepMind  tested the performance of an agent that incorporated all six of these modifications. The corresponding algorithm was termed **Rainbow**.
+- It outperforms each of the individual modifications and achieves state-of-the-art performance on Atari 2600 games!
+
+    ![image22]
+
+- One of the provided baseline algorithms was Rainbow DQN. In case of using it follow the [setup instructions](https://contest.openai.com/2018-1/details/).
+
 
 ## Setup Instructions <a name="Setup_Instructions"></a>
 The following is a brief set of instructions on setting up a cloned repository.
