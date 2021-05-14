@@ -356,7 +356,7 @@ That is between consecutive experience tuples.
 
 - [Lunar Lander Example](https://github.com/ddhartma/Deep-Reinforcement-Learning-Project-OpenAI-Gym-LunarLander-v2)
 
-- [Navigation DQN](https://github.com/ddhartma/Deep-Reinforcement-Learning-Project-Unity-Banana-DQN)
+- [Unitiy-Banana-DQN](https://github.com/ddhartma/Deep-Reinforcement-Learning-Project-Unity-Banana-DQN)
 
 ## Deep Q-Learning Improvements <a name="impro"></a>
 - Double DQN
