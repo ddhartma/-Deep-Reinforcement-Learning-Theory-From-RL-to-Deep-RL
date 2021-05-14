@@ -33,7 +33,7 @@
 - [Fixed Q Targets](#fixed_q_targets)
 - [Reference: Human-level control through deep reinforcement learning](#paper)
 - [The DQN Algorithm](#algo_1)
-- [Example LunarLander-v2](#lunar_lander)
+- [Examples](#dqn_examples)
 - [Deep Q-Learning Improvements](#impro)
     - [Double DQN](#double_dqn)
     - [Prioritized Experience Replay](#prio_exp_rep)
@@ -352,9 +352,11 @@ That is between consecutive experience tuples.
 ![image15]
 
 
-## Example LunarLander-v2 <a name="lunar_lander"></a>
+## Examples <a name="dqn_examples"></a>
 
 - [Lunar Lander Example](https://github.com/ddhartma/Deep-Reinforcement-Learning-Project-OpenAI-Gym-LunarLander-v2)
+
+- [Navigation DQN](https://github.com/ddhartma/Deep-Reinforcement-Learning-Project-Unity-Banana-DQN)
 
 ## Deep Q-Learning Improvements <a name="impro"></a>
 - Double DQN
