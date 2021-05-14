@@ -69,8 +69,7 @@ When do we need ***Deep Reinforcement Learning***?
 - **Deep Learning** to find the **optimal parameters** for these function approximators. 
 - And here it is, the **Deep Q-Network**.
 
-
-    ![image1]
+![image1]
 
 - Some literature:
     - [Neural Fitted Q Iteration - First Experienceswith a Data Efficient Neural ReinforcementLearning Method](http://ml.informatik.uni-freiburg.de/former/_media/publications/rieecml05.pdf)
