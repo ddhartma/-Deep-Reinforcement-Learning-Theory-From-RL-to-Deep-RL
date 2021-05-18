@@ -20,18 +20,20 @@
 [image20]: assets/prio_exp_rep_2.png "image20"
 [image21]: assets/dueling_networks.png "image21"
 [image22]: assets/rainbow.png "image22"
+[image23]: assets/q_learning_update.png "image23"
 
 # Deep Reinforcement Learning Theory - Deep Q-Networks
 
 ## Content 
 - [Introduction](#intro)
 - [From RL to Deep RL](#from_rl_to_deep_rl)
-- [Deep Q-Networks](#deep_q_networks)
+- [Deep Q-Networks in Video Games](#deep_q_networks)
+- [Modifications due to unstable and ineffective policy](#modifications)
 - [Experience Replay](#experience_replay)
 - [Fixed Q Targets](#fixed_q_targets)
 - [Reference: Human-level control through deep reinforcement learning](#paper)
 - [The DQN Algorithm](#algo_1)
-- [Example LunarLander-v2](#lunar_lander)
+- [Examples](#dqn_examples)
 - [Deep Q-Learning Improvements](#impro)
     - [Double DQN](#double_dqn)
     - [Prioritized Experience Replay](#prio_exp_rep)
@@ -48,22 +50,33 @@
 
 
 ## From RL to Deep RL <a name="from_rl_to_deep_rl"></a>
-What is Deep RL? 
-- In some sense, it is using **nonlinear function approximators** to calculate the value actions based directly on observation from the environment.
-- This is represented as a **Deep Neural Network**.
-- **Deep Learning** to find the **optimal parameters** for these function approximators.
-- Supervised Deep Learning concepts use label training data for supervised learning. --> pixels-to-labels
-- When an oral agent handles the entire end-to-end pipeline, it's called pixels-to-actions, referring to the networks ability to take raw sensor data and choose the action,
-it thinks will best maximize its reward.
+What is ***Reinforcement Learning***? **Markov Decision Process (MDP)**
+- An **environment** is able to interact with an **agent**. 
+- The agent is able to take an **action** which will bring it **from one state into another** one. 
+- The environment will then provide a **reward** for this new state, which can be **positive or negative** (penalty). 
+- Goal: For every state the agent should **choose the best action** so that we **maximize our total cumulative reward**.
+- By **visiting states multiple times** and by **updating our expected cumulative reward** with the one we actually obtain, we are able to **find out the best action** to take for every state of the environment. This is the basis of the **Q-Network algorithm**.
 
-    ![image1]
+When do we need ***Deep Reinforcement Learning***?
+- Standard RL is fine for a **finite number of states** (e.g. gridworld)
+- Problem for **non-finite state variables (or actions)** (e.g. robot arm) 
+- For continuous states (or actions) it is unlikely to visit a state multiple times, thus making it impossible to update the estimation of the best action to take. 
+- Some form of **interpolation** is needed. 
+- **Linear interpolation**: simply consists in “drawing a line between two states"
+- **Nonlinear interpolation**: neural network comes onto the stage. 
+- **Neural networks** give us the **possibility to predict the best action** to take with a non-linear model.
+- In some sense, it is using **nonlinear function approximators** to calculate the value actions based directly on observation from the environment.
+- **Deep Learning** to find the **optimal parameters** for these function approximators. 
+- And here it is, the **Deep Q-Network**.
+
+![image1]
 
 - Some literature:
     - [Neural Fitted Q Iteration - First Experienceswith a Data Efficient Neural ReinforcementLearning Method](http://ml.informatik.uni-freiburg.de/former/_media/publications/rieecml05.pdf)
     - [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
 
 
-## Deep Q-Networks <a name="deep_q_networks"></a> 
+## Deep Q-Networks in Video Games<a name="deep_q_networks"></a> 
 ### Neural Networks
 - In 2015, Deep Mind made a breakthrough by
 designing an agent that learned to play video games better than humans.
@@ -73,7 +86,7 @@ designing an agent that learned to play video games better than humans.
 and it produces **a vector of action values**, with the **max value indicating the action to take**.
 - As a reinforcement signal, it is fed back the change in game score at each time step.
 - In the beginning when the neural network is **initialized with random values**, the actions taken are all over the place.
-- Overtime it begins to **associate situations and sequences** in
+- Over time it begins to **associate situations and sequences** in
 the game with appropriate actions and learns to actually play the game well.
 
 ### Complexity
@@ -106,33 +119,51 @@ these convolutional layers also extract some temporal properties across those fr
 
     ![image9]
 
-### Modifications due to unstable and ineffective policy
+## Modifications due to unstable and ineffective policy <a name="modifications"></a> 
 - Training such a network requires a lot of data,
-but even then, it is not guaranteed to converge on the optimal value function.
-- In fact, there are situations where the network weights can oscillate or diverge, due to the high correlation between actions and states.
+but even then, it is **not guaranteed to converge on the optimal value function**.
+- In fact, there are situations where the network **weights can oscillate or diverge**, due to the **high correlation between actions and states**.
 - This can result in a very unstable and ineffective policy.
 
 - Two succesful modifications: 
-    - Experience replay
-    - Fixed Q targets
+    - ***Experience replay***
+    - ***Fixed Q targets***
 
 
 ## Experience Replay <a name="experience_replay"></a> 
 - In basic Q-learning algorithm the agent 
-    - interacts with the environment and at each time step and obtains a state action reward
+    - interacts with the environment 
+    - at each time step it obtains a state action reward
     - learns from it
-    - moves on to the next tuple in the following timestep.
-- This seems a little wasteful.
-- Agent could learn more from these experienced tuples if we stored them somewhere.
-- Moreover, some states are pretty rare to come by and some actions can be pretty costly, so it would be nice to recall such experiences.
+    - moves on to the next tuple in the following time step
+    - Tuple is gone 
+- If tuple would be stored:
+    - Agent could learn more from it
+    - Agent would choose rare states and costly actions less likely
 
 ### Replay buffer (store and sample)
-- **Store** each experienced tuple in this buffer 
-- Then **sample** a small batch of tuples from it in order to learn.
-- Agent is able to learn from individual tuples multiple times,
-recall rare occurrences, and in general makes better use of fire experience.
-- Consider: a sequence of experienced tuples can be highly correlated
-- By keeping track of a **replay buffer** and using **experience replay** to **sample from the buffer at random**, we can prevent action values from oscillating or diverging catastrophically.
+- The main part of the training is **experience replay**. In each time step of one episode: 
+    1. **Sample**:
+        - Choose an action **A** in state **S** with **ε-greedy** policy **π**
+        - Take action **A**
+        - Observe reward **R**
+        - Enter next state **S'**
+        - Store experienced tuple **(S,A,R,S')** in replay memory
+    2. **Learn**:
+        - Choose **random** minibatch of tuples **(s<sub>j</sub>, a<sub>j</sub>, r<sub>j</sub>,s<sub>j+1</sub>)** 
+        - Set target **Q<sub>j</sub>(w<sup>-</sup>) = r<sub>j</sub> + γ max<sub>a</sub>q(s<sub>j+1</sub>, a, w<sup>-</sup>)**
+        - Update **Δw = α(Q<sub>target</sub> - Q<sub>expected</sub>) ∇Q<sub>expected</sub>**
+        - Every C-steps: reset **w<sup>-</sup> ← w**
+- In other words, it’s alternating between phases of exploration and phases of training. 
+    - This decoupling allows the neural network the converge towards an optimal solution.
+    - Choosing minibatches at random breaks correlations between
+ a sequence of experienced tuples. This prevents action values from oscillating or diverging catastrophically.
+ - Q-learning is a form of **Temporal Difference or TD learning**
+- **Goal** Reduce the **TD error**: Difference between the **TD target Q-value** and the currently **predicted Q-value**.
+
+    ![image16]
+
+    ![image23]
 
     ![image2]
 
@@ -140,17 +171,14 @@ recall rare occurrences, and in general makes better use of fire experience.
 - Experience replay helps us to address one type of correlation:
 That is between consecutive experience tuples.
 - There is another kind of correlation that Q-learning is susceptible to.
-- Q-learning is a form of **Temporal Difference or TD learning**
-- **Goal** Reduce the difference (TD error) between the **TD target** and the currently **predicted Q-value**.
-
-    ![image3]
-
 - In Q-Learning, we update a **guess** with a **guess**, and this can potentially lead to **harmful correlations**. 
-- To avoid this, we can update the parameters *w** in the network **q<sup>^</sup>** to better approximate the action value corresponding to state **S** and action **A** with the following update rule:
+- To avoid this, use this update rule with **Fixed Targets**:
 
     ![image4]
 
-    where **w<sup>−</sup>** are the weights of a separate target network that are not changed during the learning step, and **(S, A, R, S′)** is an experience tuple.
+    where **w<sup>−</sup>** are the weights of a separate target network that are not changed during the learning step, and **(S, A, R, S′)** is the experience tuple.
+
+    ![image3]
 
 ## Reference: Human-level control through deep reinforcement learning <a name="paper"></a> 
 - Check the following reference: [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
@@ -240,7 +268,7 @@ That is between consecutive experience tuples.
     - No systematic grid search for hyperparameter choice (all fixed for all games)
 
 - **Evaluation procedure**:
-    - Trained agents were evaluated by playing each game **30 times** for up to **5min** each with different initial random conditions and an **ε-greedy** policy with**ε=0.05**
+    - Trained agents were evaluated by playing each game **30 times** for up to **5min** each with different initial random conditions and an **ε-greedy** policy with **ε=0.05**
     - Used to minimize overfitting effects during evaluation.
     - This random agent is used as a baseline comparison (with random action at 10 Hz, every 6th frame)
 - **Goal of agent**: select actions which maximize cumulative future rewards
@@ -264,11 +292,11 @@ That is between consecutive experience tuples.
         ![image10]
     
         **T**: time-step at which the game terminates. 
-    - Optimal action-value function **Q<sup>*</sup>(s,a)** as the maximum expected return achievable by following any policy, after seeing some sequences and then taking some action **a**,
+    - Optimal action-value function **Q<sup>*</sup>(s,a)** as the maximum expected return achievable by following any policy, after seeing some sequences and then taking some action **a**,
 
         ![image5]
     
-    - The optimal action-value function obeys an important identity known as the Bellman equation. This is based on the following intuition: if the optimal value **Q<sup>*</sup>(s',a')** of the sequences **s'** at the next time-step was known for all possible actions **a'**, then the optimal strategy is to select the action **a'** maximizing the expected value of **r + γ Q<sup>*</sup>(s',a')**:
+    - The optimal action-value function obeys an important identity known as the Bellman equation. This is based on the following intuition: if the optimal value **Q<sup>*</sup>(s',a')** of the sequences **s'** at the next time-step was known for all possible actions **a'**, then the optimal strategy is to select the action **a'** maximizing the expected value of **r + γ Q<sup>*</sup>(s',a')**:
 
         ![image11]
 
@@ -282,7 +310,7 @@ That is between consecutive experience tuples.
     - Use a nonlinear function approximator such as a neural network
     - A neural network function approximator with weights **θ** is a Q-network
     - A Q-network can be trained by adjusting the parameter **θ<sub>i</sub>** at iteration **i** to reduce the mean-squared error in the Bellman equation, where the optimal target values 
-    **r + γ max<sub>a'</sub>Q<sup>*</sup>(s',a')** are substituted by approximate target values **r + γ max<sub>a'</sub>Q(s',a', θ<sub>i</sub><sup>-</sup>)**
+    **r + γ max<sub>a'</sub>Q<sup>*</sup>(s',a')** are substituted by approximate target values **r + γ max<sub>a'</sub>Q(s',a', θ<sub>i</sub><sup>-</sup>)**
     using parameters **θ<sub>i</sub><sup>-</sup>** from some previous iteration (**Fixed Targets**).
     
     - Use **Experience Replay** and **Fixed Targets** due to instabilities (triggered by correlations) 
@@ -307,7 +335,8 @@ That is between consecutive experience tuples.
     - First, we use a technique known as **experience replay** in which we store the agents experience **e<sub>t</sub> = (s<sub>t</sub>,a<sub>t</sub>, r<sub>t</sub>,s<sub>t+1</sub>)** at time step **t** in a data set **D<sub>t</sub> = {e<sub>1</sub>, ..., e<sub>t</sub>}** pooled over many episodes (where the end of an episode occurs when a terminal state is reached) into a replay memory
     - During the inner loop of the algorithm, we apply Q-learning updates, or minibatch updates, to samples of experience (s,a,r,s') drawn at random from the pool of stored samples. 
     - This approach has several advantages over standard online Q-learning. 
-        - First, each step of experience is potentially used in many weight updates, which allows for greater data efficiency. - Second, randomizing the samples breaks these correlations and therefore reduces the variance of the updates. 
+        - First, each step of experience is potentially used in many weight updates, which allows for greater data efficiency. 
+        - Second, randomizing the samples breaks these correlations and therefore reduces the variance of the updates. 
         - Third, when learning on-policy the current parameters determine the next data sample that the parameters are trained on. 
     - By using experience replay the ehaviour distribution is averaged over many of its previous states, smoothing out learning and avoiding oscillations or divergence in the parameters. 
     - The algorithm only stores the last **N** experience tuples in the replay memory, and samples uniformly at random from **D** when performing updates.
@@ -315,19 +344,19 @@ That is between consecutive experience tuples.
     - This modification makes the algorithm more stable compared to standard online Q-learning, where an update that increases **Q(s<sub>t</sub>,a<sub>t</sub>)** often also increases **Q(s<sub>t+1</sub>,a)** for all **a** and hence also increases the target **y<sub>j</sub>**, possibly leading to oscillations or divergence of the policy. Generating the targets using an older set of parameters adds a delay between the time an update to **Q** is made and the time the update affects the targetsyj,making divergence oroscillations much more unlikely.
     - **Clip** the error term from the update
      
-        **r + γ max<sub>a'</sub> Q(s',a', &theta;<sub>i</sub><sup>-</sup>) - Q(s,a, &theta; <sub>i</sub>)**
+        **r + γ max<sub>a'</sub> Q(s',a', &theta;<sub>i</sub><sup>-</sup>) - Q(s,a, &theta; <sub>i</sub>)**
     
         to be between -1 and 1. This form oferror clipping further improved the stability of the algorithm
 
 ## The DQN Algorithm <a name="algo_1"></a>
 ![image15]
 
-![image16]
 
-
-## Example LunarLander-v2 <a name="lunar_lander"></a>
+## Examples <a name="dqn_examples"></a>
 
 - [Lunar Lander Example](https://github.com/ddhartma/Deep-Reinforcement-Learning-Project-OpenAI-Gym-LunarLander-v2)
+
+- [Unitiy-Banana-DQN](https://github.com/ddhartma/Deep-Reinforcement-Learning-Project-Unity-Banana-DQN)
 
 ## Deep Q-Learning Improvements <a name="impro"></a>
 - Double DQN
