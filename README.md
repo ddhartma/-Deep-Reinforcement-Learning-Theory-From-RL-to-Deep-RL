@@ -44,12 +44,12 @@
 - [Acknowledgments](#Acknowledgments)
 - [Further Links](#Further_Links)
 
-## Introduction <a name="what_is_reinforcement"></a>
+## Introduction <a id="what_is_reinforcement"></a>
 - Reinforcement learning is **learning** what to do — **how to map situations to actions** — so as **to maximize a numerical reward** signal. The learner is not told which actions to take, but instead must discover which actions yield the most reward by trying them. (Sutton and Barto, [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book.html))
 - Deep reinforcement learning refers to approaches where the knowledge is represented with a deep neural network
 
 
-## From RL to Deep RL <a name="from_rl_to_deep_rl"></a>
+## From RL to Deep RL <a id="from_rl_to_deep_rl"></a>
 What is ***Reinforcement Learning***? **Markov Decision Process (MDP)**
 - An **environment** is able to interact with an **agent**. 
 - The agent is able to take an **action** which will bring it **from one state into another** one. 
@@ -76,7 +76,7 @@ When do we need ***Deep Reinforcement Learning***?
     - [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
 
 
-## Deep Q-Networks in Video Games<a name="deep_q_networks"></a> 
+## Deep Q-Networks in Video Games<a id="deep_q_networks"></a> 
 ### Neural Networks
 - In 2015, Deep Mind made a breakthrough by
 designing an agent that learned to play video games better than humans.
@@ -119,7 +119,7 @@ these convolutional layers also extract some temporal properties across those fr
 
     ![image9]
 
-## Modifications due to unstable and ineffective policy <a name="modifications"></a> 
+## Modifications due to unstable and ineffective policy <a id="modifications"></a> 
 - Training such a network requires a lot of data,
 but even then, it is **not guaranteed to converge on the optimal value function**.
 - In fact, there are situations where the network **weights can oscillate or diverge**, due to the **high correlation between actions and states**.
@@ -130,7 +130,7 @@ but even then, it is **not guaranteed to converge on the optimal value function*
     - ***Fixed Q targets***
 
 
-## Experience Replay <a name="experience_replay"></a> 
+## Experience Replay <a id="experience_replay"></a> 
 - In basic Q-learning algorithm the agent 
     - interacts with the environment 
     - at each time step it obtains a state action reward
@@ -167,7 +167,7 @@ but even then, it is **not guaranteed to converge on the optimal value function*
 
     ![image2]
 
-## Fixed Q Targets <a name="fixed_q_targets"></a>
+## Fixed Q Targets <a id="fixed_q_targets"></a>
 - Experience replay helps us to address one type of correlation:
 That is between consecutive experience tuples.
 - There is another kind of correlation that Q-learning is susceptible to.
@@ -180,7 +180,7 @@ That is between consecutive experience tuples.
 
     ![image3]
 
-## Reference: Human-level control through deep reinforcement learning <a name="paper"></a> 
+## Reference: Human-level control through deep reinforcement learning <a id="paper"></a> 
 - Check the following reference: [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
 
 ### Idea of this paper:
@@ -348,23 +348,23 @@ That is between consecutive experience tuples.
     
         to be between -1 and 1. This form oferror clipping further improved the stability of the algorithm
 
-## The DQN Algorithm <a name="algo_1"></a>
+## The DQN Algorithm <a id="algo_1"></a>
 ![image15]
 
 
-## Examples <a name="dqn_examples"></a>
+## Examples <a id="dqn_examples"></a>
 
 - [Lunar Lander Example](https://github.com/ddhartma/Deep-Reinforcement-Learning-Project-OpenAI-Gym-LunarLander-v2)
 
 - [Unitiy-Banana-DQN](https://github.com/ddhartma/Deep-Reinforcement-Learning-Project-Unity-Banana-DQN)
 
-## Deep Q-Learning Improvements <a name="impro"></a>
+## Deep Q-Learning Improvements <a id="impro"></a>
 - Double DQN
 - Prioritized Experience Replay
 - Dueling DQN
 
 
-## Double DQN <a name="double_dqn"></a>
+## Double DQN <a id="double_dqn"></a>
 - Deep Q-Learning [tends to overestimate](https://www.ri.cmu.edu/pub_files/pub1/thrun_sebastian_1993_1/thrun_sebastian_1993_1.pdf) action values. [Double Q-Learning](https://arxiv.org/abs/1509.06461) has been shown to work well in practice to help with this. Why?
 - **Update rule for Q-learning with function approximation** (see figure below): For the TD target the max operation is necessary to find
 the best possible value from the next state.
@@ -393,7 +393,7 @@ it is different enough from w that it can be reused for this purpose.
     ![image18]
 
 
-## Prioritized Experience Replay <a name="prio_exp_rep"></a>
+## Prioritized Experience Replay <a id="prio_exp_rep"></a>
 - Deep Q-Learning samples experience transitions uniformly from a replay memory. [Prioritized experienced replay](https://arxiv.org/abs/1511.05952) is based on the idea that the agent can learn more effectively from some transitions than from others, and the more important transitions should be sampled with higher probability.
 
     ![image19]
@@ -433,7 +433,7 @@ reduce the number of batch updates needed to learn a value function.
     ![image20]
 
 
-## Dueling DQN <a name="duel_dqn"></a>
+## Dueling DQN <a id="duel_dqn"></a>
 - Currently, in order to determine which states are (or are not) valuable, we have to estimate the corresponding action values for each action. However, by replacing the traditional Deep Q-Network (DQN) architecture with a [dueling architecture](https://arxiv.org/abs/1511.06581), we can assess the value of each state, without having to learn the effect of each action.
 
 
@@ -453,7 +453,7 @@ and one that estimates the **advantage for each action**.
     ![image21]
 
 
-## Rainbow <a name="rainbow"></a>
+## Rainbow <a id="rainbow"></a>
 - Many more extensions have been proposed, including:
 
     - Learning from [multi-step bootstrap targets](https://arxiv.org/abs/1602.01783) 
@@ -470,12 +470,12 @@ and one that estimates the **advantage for each action**.
 - One of the provided baseline algorithms was Rainbow DQN. In case of using it follow the [setup instructions](https://contest.openai.com/2018-1/details/).
 
 
-## Setup Instructions <a name="Setup_Instructions"></a>
+## Setup Instructions <a id="Setup_Instructions"></a>
 The following is a brief set of instructions on setting up a cloned repository.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-### Prerequisites: Installation of Python via Anaconda and Command Line Interaface <a name="Prerequisites"></a>
+### Prerequisites: Installation of Python via Anaconda and Command Line Interaface <a id="Prerequisites"></a>
 - Install [Anaconda](https://www.anaconda.com/distribution/). Install Python 3.7 - 64 Bit
 
 - Upgrade Anaconda via
@@ -489,7 +489,7 @@ $ conda upgrade --all
 $ export PATH="/path/to/anaconda/bin:$PATH"
 ```
 
-### Clone the project <a name="Clone_the_project"></a>
+### Clone the project <a id="Clone_the_project"></a>
 - Open your Command Line Interface
 - Change Directory to your project older, e.g. `cd my_github_projects`
 - Clone the Github Project inside this folder with Git Bash (Terminal) via:
@@ -526,10 +526,10 @@ pyspark = 2.4.3
 $ conda env list
 ```
 
-## Acknowledgments <a name="Acknowledgments"></a>
-* This project is part of the Udacity Nanodegree program 'Data Science'. Please check this [link](https://www.udacity.com) for more information.
+## Acknowledgments <a id="Acknowledgments"></a>
+* This project is part of the Udacity Nanodegree program 'Deep Reinforcement Learning'. Please check this [link](https://www.udacity.com) for more information.
 
-## Further Links <a name="Further_Links"></a>
+## Further Links <a id="Further_Links"></a>
 
 Git/Github
 * [GitFlow](https://datasift.github.io/gitflow/IntroducingGitFlow.html)
@@ -543,9 +543,38 @@ Docstrings, DRY, PEP8
 
 Further Deep Reinforcement Learning References
 * [Very good summary of DQN](https://medium.com/@nisheed/udacity-deep-reinforcement-learning-project-1-navigation-d16b43793af5)
+* [An Introduction to Deep Reinforcement Learning](https://thomassimonini.medium.com/an-introduction-to-deep-reinforcement-learning-17a565999c0c)
+* Helpful medium blog post on policies [Off-policy vs On-Policy vs Offline Reinforcement Learning Demystified!](https://kowshikchilamkurthy.medium.com/off-policy-vs-on-policy-vs-offline-reinforcement-learning-demystified-f7f87e275b48)
+* [Understanding Baseline Techniques for REINFORCE](https://medium.com/@fork.tree.ai/understanding-baseline-techniques-for-reinforce-53a1e2279b57)
 * [Cheatsheet](https://raw.githubusercontent.com/udacity/deep-reinforcement-learning/master/cheatsheet/cheatsheet.pdf)
+* [Reinforcement Learning Cheat Sheet](https://towardsdatascience.com/reinforcement-learning-cheat-sheet-2f9453df7651)
 * [Reinforcement Learning Textbook](https://s3-us-west-1.amazonaws.com/udacity-drlnd/bookdraft2018.pdf)
 * [Reinforcement Learning Textbook - GitHub Repo to Python Examples](https://github.com/ShangtongZhang/reinforcement-learning-an-introduction)
 * [Udacity DRL Github Repository](https://github.com/udacity/deep-reinforcement-learning)
 * [Open AI Gym - Installation Guide](https://github.com/openai/gym#installation)
 * [Deep Reinforcement Learning Nanodegree Links](https://docs.google.com/spreadsheets/d/19jUvEO82qt3itGP3mXRmaoMbVOyE6bLOp5_QwqITzaM/edit#gid=0)
+
+Important publications
+* [2004 Y. Ng et al., Autonomoushelicopterflightviareinforcementlearning --> Inverse Reinforcement Learning](https://people.eecs.berkeley.edu/~jordan/papers/ng-etal03.pdf)
+* [2004 Kohl et al., Policy Gradient Reinforcement Learning for FastQuadrupedal Locomotion --> Policy Gradient Methods](https://www.cs.utexas.edu/~pstone/Papers/bib2html-links/icra04.pdf)
+* [2013-2015, Mnih et al. Human-level control through deep reinforcementlearning --> DQN](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
+* [2014, Silver et al., Deterministic Policy Gradient Algorithms --> DPG](http://proceedings.mlr.press/v32/silver14.html)
+* [2015, Lillicrap et al., Continuous control with deep reinforcement learning --> DDPG](https://arxiv.org/abs/1509.02971)
+* [2015, Schulman et al, High-Dimensional Continuous Control Using Generalized Advantage Estimation --> GAE](https://arxiv.org/abs/1506.02438)
+* [2016, Schulman et al., Benchmarking Deep Reinforcement Learning for Continuous Control --> TRPO and GAE](https://arxiv.org/abs/1604.06778)
+* [2017, PPO](https://openai.com/blog/openai-baselines-ppo/)
+* [2018, Bart-Maron et al., Distributed Distributional Deterministic Policy Gradients](https://openreview.net/forum?id=SyZipzbCb)
+* [2013, Sergey et al., Guided Policy Search --> GPS](https://graphics.stanford.edu/projects/gpspaper/gps_full.pdf)
+* [2015, van Hasselt et al., Deep Reinforcement Learning with Double Q-learning --> DDQN](https://arxiv.org/abs/1509.06461)
+* [1993, Truhn et al., Issues in Using Function Approximation for Reinforcement Learning](https://www.ri.cmu.edu/pub_files/pub1/thrun_sebastian_1993_1/thrun_sebastian_1993_1.pdf)
+* [2015, Schaul et al., Prioritized Experience Replay --> PER](https://arxiv.org/abs/1511.05952)
+* [2015, Wang et al., Dueling Network Architectures for Deep Reinforcement Learning](https://arxiv.org/abs/1511.06581)
+* [2016, Silver et al., Mastering the game of Go with deep neural networks and tree search](https://www.researchgate.net/publication/292074166_Mastering_the_game_of_Go_with_deep_neural_networks_and_tree_search)
+* [2017, Hessel et al. Rainbow: Combining Improvements in Deep Reinforcement Learning](https://arxiv.org/abs/1710.02298)
+* [2016, Mnih et al., Asynchronous Methods for Deep Reinforcement Learning](https://arxiv.org/abs/1602.01783)
+* [2017, Bellemare et al., A Distributional Perspective on Reinforcement Learning](https://arxiv.org/abs/1707.06887)
+* [2017, Fortunato et al., Noisy Networks for Exploration](https://arxiv.org/abs/1706.10295)
+* [2016, Wang et al., Sample Efficient Actor-Critic with Experience Replay --> ACER](https://arxiv.org/abs/1611.01224)
+* [2017, Lowe et al. Multi-Agent Actor-Critic for MixedCooperative-Competitive Environments](https://papers.nips.cc/paper/2017/file/68a9750337a418a86fe06c1991a1d64c-Paper.pdf)
+* [2017, Silver et al. Mastering the Game of Go without Human Knowledge --> AlphaGo Zero](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf)
+* [2017, Silver et al., Mastering Chess and Shogi by Self-Play with aGeneral Reinforcement Learning Algorithm --> AlphaZero](https://arxiv.org/pdf/1712.01815.pdf)
