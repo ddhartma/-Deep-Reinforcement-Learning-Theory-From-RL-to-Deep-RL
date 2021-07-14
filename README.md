@@ -72,7 +72,7 @@ When do we need ***Deep Reinforcement Learning***?
 ![image1]
 
 - Some literature:
-    - [Neural Fitted Q Iteration - First Experienceswith a Data Efficient Neural ReinforcementLearning Method](http://ml.informatik.uni-freiburg.de/former/_media/publications/rieecml05.pdf)
+    - [Neural Fitted Q Iteration - First Experiences with a Data Efficient Neural Reinforcement Learning Method](http://ml.informatik.uni-freiburg.de/former/_media/publications/rieecml05.pdf)
     - [Human-level control through deep reinforcement learning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
 
 
